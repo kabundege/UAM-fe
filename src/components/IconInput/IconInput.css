@@ -1,0 +1,168 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  min-height: 100%;
+  font-family: Regular;
+}
+
+.app {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.spacer {
+  margin: 10.6666666667px;
+}
+
+.halfSpacer {
+  margin: 3.5555555556px;
+}
+
+.error {
+  width: 100%;
+  text-align: center;
+  color: #B63434 !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  border: none;
+  outline: none;
+  color: #000 !important;
+  -webkit-text-size-adjust: 1.2em;
+  -webkit-text-fill-color: #000;
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+  -webkit-transition: background-color 5000s ease-in-out 0s;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+
+@font-face {
+  font-family: Black;
+  src: url(../../assets/fonts/Black.otf);
+}
+@font-face {
+  font-family: ExtraBold;
+  src: url(../../assets/fonts/ExtraBold.otf);
+}
+@font-face {
+  font-family: Bold;
+  src: url(../../assets/fonts/Bold.otf);
+}
+@font-face {
+  font-family: SemiBold;
+  src: url(../../assets/fonts/DemiBold.otf);
+}
+@font-face {
+  font-family: Medium;
+  src: url(../../assets/fonts/Medium.otf);
+}
+@font-face {
+  font-family: Regular;
+  src: url(../../assets/fonts/Regular.otf);
+}
+@font-face {
+  font-family: Thin;
+  src: url(../../assets/fonts/Thin.otf);
+}
+@font-face {
+  font-family: Light;
+  src: url(../../assets/fonts/Light.otf);
+}
+
+.absolute-fill {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.flexer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.centerd {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  transform: translate(-50%, -50%);
+}
+@media screen and (max-width: 500px) {
+  .logo {
+    left: 50%;
+  }
+}
+@-webkit-keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.SimpleInput {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 0;
+  padding: 0 24px;
+  background: #F1F2F4;
+  border-radius: 8px;
+}
+.SimpleInput .icon {
+  color: #9099A8 !important;
+  transition: all 0.5s ease;
+  cursor: pointer;
+}
+.SimpleInput .icon:hover {
+  color: #77828D !important;
+}
+.SimpleInput input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: none;
+  padding: 16px;
+  font-family: Medium;
+  font-size: 16px;
+}
+.SimpleInput input::-moz-placeholder {
+  color: #C8CDD4;
+}
+.SimpleInput input:-ms-input-placeholder {
+  color: #C8CDD4;
+}
+.SimpleInput input::placeholder {
+  color: #C8CDD4;
+}
