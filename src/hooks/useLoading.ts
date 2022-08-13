@@ -25,7 +25,7 @@ const useLoading = (initialLoadingState = false) => {
         .finally(() => setLoader(false))
     }
 
-    return { isLoading, load, setLoader, error, clearError } as const
+    return { isLoading, load, setLoader, error, clearError, setError } as const
 }
 
 export default useLoading

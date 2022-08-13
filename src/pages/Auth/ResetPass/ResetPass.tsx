@@ -2,23 +2,21 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import InputField from '../../../components/InputField';
-import { signInSchema } from '../../../validation/auth.validation';
+import { ResetSchema } from '../../../validation/auth.validation';
 import { BsEyeSlashFill,BsEyeFill } from 'react-icons/bs';
 import Button from '../../../components/Button';
-import { Link, useNavigate } from 'react-router-dom';
 import useLoading from '../../../hooks/useLoading';
 
 interface Creds {
-  email: string,
-  password: string,
+  confirm: string,
+  password: string
 }
 
-const initialCreds = { email:"",password:""}
+const initialCreds = { confirm:"",password:""}
 
-export default function Signin() {
-  const { isLoading,error } = useLoading(false)
+export default function ResetPass() {
   const [ ShowPassword,setShowPassword ] = useState(false)
-  const navigate = useNavigate() 
+  const { isLoading,error,setError,clearError } = useLoading(false)
 
   const {
     register,
@@ -27,12 +25,17 @@ export default function Signin() {
   } = useForm<Creds>({
     reValidateMode: 'onChange',
     defaultValues: initialCreds,
-    resolver: yupResolver(signInSchema),
+    resolver: yupResolver(ResetSchema),
   });  
 
   const submitHandler = handleSubmit((data)=>{
     // here
-    navigate('/verification')
+    if(data.password !== data.confirm){
+      return setError('Passwords must match')
+    }
+
+    clearError()
+    
   })
 
   const togglePassword = () => {
@@ -41,14 +44,7 @@ export default function Signin() {
 
   return (
     <form className='flex flex-col  px-20' onSubmit={submitHandler}>
-      <h1 className="text-4xl font-bold text-primary opacity-20 my-10">Sign In</h1>
-      <InputField 
-        type="email"
-        label='Email address'
-        placeholder='e.g example@internet.com'
-        error={errors.email?.message}
-        register={register('email')}
-      />
+      <h1 className="text-center text-4xl my-10 font-bold text-primary opacity-20">Reset Password</h1>
       <InputField 
         label='Password'
         placeholder='••••••••••••'
@@ -61,13 +57,24 @@ export default function Signin() {
         register={register('password')}
         error={errors.password?.message}
       />
-        <Link to="/forgot-password" className='ml-auto text-gray-500 hover:text-gray-900' > Forgot Password ?</Link>
-        {
-          error ?
-            <p className='error' >{error}</p> :
-            <div className="spacer" />
+      <InputField 
+        label='Confirm Password'
+        placeholder='••••••••••••'
+        type={ ShowPassword ? "text" : "password"}
+        IconProp={ 
+          ShowPassword ? 
+            <BsEyeFill className="icon" onClick={togglePassword} /> : 
+            <BsEyeSlashFill className='icon' onClick={togglePassword} />
         }
-      <Button className="w-auto" text='Sign In' isLoading={isLoading} />
+        register={register('confirm')}
+        error={errors.confirm?.message}
+      />
+      {
+        error ?
+          <p className='error' >{error}</p> :
+          <div className="spacer" />
+      }
+      <Button className="w-auto" text='Reset' isLoading={isLoading} />
     </form>
   )
 }

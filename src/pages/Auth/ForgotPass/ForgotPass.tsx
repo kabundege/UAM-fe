@@ -37,7 +37,7 @@ export default function ForgotPass() {
     <form className='flex flex-col  px-20' onSubmit={submitHandler}>
       <div className={'my-10'+flexer}>
         <BsChevronLeft className="cursor-pointer font-bold" onClick={() => navigate(-1)} />
-        <h1 className="text-center text-4xl font-bold text-primary opacity-20">Reset Password</h1>
+        <h1 className="text-center text-4xl font-bold text-primary opacity-20">Change Password</h1>
         <div/>
       </div>
       <p className="text-center font-medium text-lg text-gray-500 mt-10 mb-5">
