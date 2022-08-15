@@ -11,6 +11,9 @@ import { centerd, flexer } from '../../../styles/globalStyles';
 import SelectField from '../../../components/SelectField';
 import { enumToArray } from '../../../helpers/enumtoArray';
 import UploadField from '../../../components/UploadField';
+import { getUploadSignedUrl } from '../../../API/aws.service';
+import { SignupApi } from '../../../API/auth.service';
+import { useNavigate } from 'react-router-dom';
 
 
 enum MaritalStatus { SINGLE, MARRIED, DIVORCED, WIDOWED }
@@ -45,9 +48,11 @@ const initialCreds:Credentials = {
 }
 
 export default function Signup() {
-  const { isLoading,error,clearError } = useLoading(false)
+  const { isLoading,error,clearError,load,setError,setLoader } = useLoading(false)
   const [ ShowPassword,setShowPassword ] = useState(false)
   const [ credentials,setCreds ] = useState<Credentials>(initialCreds)
+  //
+  const navigate = useNavigate() 
 
   const { profilePhoto,maritalStatus,gender,document } = credentials
 
@@ -60,10 +65,84 @@ export default function Signup() {
   } = useForm<Credentials>({
     reValidateMode: 'onChange',
     resolver: yupResolver(signUpSchema),
-  });  
+  }); 
 
-  const submitHandler = handleSubmit((data)=>{
+  const uploadToAws = async (value:any):Promise<string | null> => {
+
+    const keys:any = await getUploadSignedUrl(value.type).catch(er => setError(er.message))
+
+    if(!keys?.data?.url)
+    return null
+      
+    const localUrl = URL.createObjectURL(value)
+
+    const blob  = await fetch(localUrl).then(res => res.blob())
+
+    const xhr = new XMLHttpRequest();
+
+    await new Promise((resolve,reject)=>{        //
+        xhr.onload = () => {
+            resolve(keys.key)
+        };
+        //
+        xhr.onerror = () => {
+            setError("Signature Upload Failed,try again later")
+            setLoader(false)
+            reject()
+        };
+        //
+        xhr.onabort = () => {
+            setError("Signture Upload Aborted")
+            setLoader(false)
+            reject()
+        };
+        //
+        xhr.upload.onprogress = () => {
+          /** return the progress of an image
+           * 
+           * * Tracking the progress
+           * if(e.lengthComputable)
+           * console.log(value.name,"==== Progress =====",Number((e.loaded/e.total) * 100).toFixed(0));
+           */
+        };
+        //
+        xhr.open("PUT", keys.data.url);
+        xhr.send(blob);
+    })
+
+    return keys.data.key
+  };
+
+  const submitHandler = handleSubmit(async (data)=>{
     // here
+    const payload:any = {
+      ...data
+    }
+
+    const files = {
+      profilePhoto,
+      document
+    }
+
+    /** Upload files */
+    for(const [key,value] of Object.entries(files)){
+        // eslint-disable-next-line
+      const imageKey = await uploadToAws(value)
+      if(!imageKey){
+        // if value key is null
+        setError('')
+        break;
+      }
+      payload[key] = imageKey
+    }
+
+    /** Create user */
+    load(SignupApi(payload))
+    .then(res => {
+      if(res.status === 200)
+      navigate('/verification')
+    })
+
   })
 
   const togglePassword = () => {
@@ -82,6 +161,8 @@ export default function Signup() {
     clearErrors(key)
   }
 
+  console.log(errors)
+
   return (
     <form className='flex flex-col px-10' onSubmit={submitHandler}>
       <h1 className="text-4xl font-bold text-primary opacity-20 mt-10">Sign Up</h1>
@@ -97,7 +178,7 @@ export default function Signup() {
       <div className={flexer}>
         <InputField 
           type="text"
-          label='name'
+          label='Full Name'
           placeholder='e.g John Doe Kalisa'
           error={errors.name?.message}
           register={register('name')}
@@ -122,6 +203,32 @@ export default function Signup() {
           data={enumToArray(MaritalStatus).map(status => ({ value: status.toString() }))}
         />
         <div className='spacer' />
+        <InputField 
+          type="number"
+          name="nationId"
+          label="Identification number"
+          placeholder='e.g 1198050012345678'
+          register={register('national_id')}
+          error={errors.national_id?.message}
+        />
+      </div>
+      <InputField 
+        type="text"
+        label='Nationality'
+        placeholder='e.g Rwandan'
+        error={errors.nationality?.message}
+        register={register('nationality')}
+      />
+      <div className={flexer}>
+        <InputField
+          type="date"
+          name="nationId"
+          label="Date of birth"
+          placeholder='e.g 1950-01-01'
+          register={register('dateOfBirth')}
+          error={errors.dateOfBirth?.message}
+        />
+        <div className='spacer' />
         <SelectField 
           label='Gender'
           value={gender}
@@ -131,14 +238,6 @@ export default function Signup() {
           data={enumToArray(Gender).map(status => ({ value: status.toString() }))}
         />
       </div>
-      <InputField 
-        type="number"
-        name="nationId"
-        label="Identification number"
-        placeholder='e.g 1198050012345678'
-        register={register('national_id')}
-        error={errors.national_id?.message}
-      />
       <UploadField
         multiple
         value={document}

@@ -6,6 +6,7 @@ import { ResetSchema } from '../../../validation/auth.validation';
 import { BsEyeSlashFill,BsEyeFill } from 'react-icons/bs';
 import Button from '../../../components/Button';
 import useLoading from '../../../hooks/useLoading';
+import { ResetApi } from '../../../API/auth.service';
 
 interface Creds {
   confirm: string,
@@ -16,7 +17,7 @@ const initialCreds = { confirm:"",password:""}
 
 export default function ResetPass() {
   const [ ShowPassword,setShowPassword ] = useState(false)
-  const { isLoading,error,setError,clearError } = useLoading(false)
+  const { isLoading,error,load,setError,clearError,apiSuccess } = useLoading(false)
 
   const {
     register,
@@ -35,6 +36,9 @@ export default function ResetPass() {
     }
 
     clearError()
+
+    /** Api */
+    load(ResetApi(data.password))
     
   })
 
@@ -74,7 +78,7 @@ export default function ResetPass() {
           <p className='error' >{error}</p> :
           <div className="spacer" />
       }
-      <Button className="w-auto" text='Reset' isLoading={isLoading} />
+      <Button success={apiSuccess} className="w-auto" text='Reset' isLoading={isLoading} />
     </form>
   )
 }

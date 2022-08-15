@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import useLoading from '../../../hooks/useLoading';
 import { flexer } from '../../../styles/globalStyles';
 import { BsChevronLeft } from 'react-icons/bs';
+import { ForgotPassApi } from '../../../API/auth.service';
 
 interface Creds {
   email: string,
@@ -16,7 +17,7 @@ interface Creds {
 const initialCreds = { email:"",password:""}
 
 export default function ForgotPass() {
-  const { isLoading,error } = useLoading(false)
+  const { isLoading,error,load, apiSuccess } = useLoading(false)
   const navigate = useNavigate()
 
   const {
@@ -31,6 +32,7 @@ export default function ForgotPass() {
 
   const submitHandler = handleSubmit((data)=>{
     // here
+    load(ForgotPassApi(data.email))
   })
 
   return (
@@ -55,7 +57,7 @@ export default function ForgotPass() {
           <p className='error' >{error}</p> :
           <div className="spacer" />
       }
-      <Button className="w-auto" text='Send' isLoading={isLoading} />
+      <Button className="w-auto" success={apiSuccess} text='Send' isLoading={isLoading} />
     </form>
   )
 }

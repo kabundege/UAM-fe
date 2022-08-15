@@ -7,6 +7,7 @@ import { BsEyeSlashFill,BsEyeFill } from 'react-icons/bs';
 import Button from '../../../components/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import useLoading from '../../../hooks/useLoading';
+import { SigninApi } from '../../../API/auth.service';
 
 interface Creds {
   email: string,
@@ -16,7 +17,7 @@ interface Creds {
 const initialCreds = { email:"",password:""}
 
 export default function Signin() {
-  const { isLoading,error } = useLoading(false)
+  const { isLoading,error,load } = useLoading(false)
   const [ ShowPassword,setShowPassword ] = useState(false)
   const navigate = useNavigate() 
 
@@ -32,7 +33,12 @@ export default function Signin() {
 
   const submitHandler = handleSubmit((data)=>{
     // here
-    navigate('/verification')
+    load(SigninApi(data))
+    .then(res => {
+      if(res.status === 200)
+      navigate('/profile')
+    })
+    
   })
 
   const togglePassword = () => {

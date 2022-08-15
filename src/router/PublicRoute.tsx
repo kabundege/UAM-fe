@@ -6,7 +6,7 @@ const PublicRoute:FC<{ children:ReactNode }> = ({ children }) => {
 
   if(localStorage.getItem('token')){
     return (
-      <Navigate replace to="/Dashboard" />
+      <Navigate replace to="/profile" />
     )
   }
  

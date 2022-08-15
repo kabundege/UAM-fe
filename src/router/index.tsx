@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ForgotPass from "../pages/Auth/ForgotPass";
 import ResetPass from "../pages/Auth/ResetPass";
 import Signin from "../pages/Auth/Signin";
@@ -23,11 +23,12 @@ const App = () => {
               </PublicRoute>
             }
           >
-            <Route path="/" element={<Signin/>} />
+            <Route path="signin" element={<Signin/>} />
             <Route path="signup" element={<Signup/>} />
             <Route path="verification" element={<Verification/>}/>
             <Route path="reset-password" element={<ResetPass/>} />
             <Route path="forgot-password" element={<ForgotPass/>} />
+            <Route index element={<Navigate to="signin" />}/>
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
