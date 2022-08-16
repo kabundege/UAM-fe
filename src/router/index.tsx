@@ -5,7 +5,9 @@ import Signin from "../pages/Auth/Signin";
 import Signup from "../pages/Auth/Signup";
 import Verification from "../pages/Auth/Verification";
 import NotFound from "../pages/NotFound";
+import Profile from "../pages/Profile";
 import Welcome from "../pages/Welcome";
+import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 //
 
@@ -30,6 +32,7 @@ const App = () => {
             <Route path="forgot-password" element={<ForgotPass/>} />
             <Route index element={<Navigate to="signin" />}/>
           </Route>
+          <Route path="/profile" element={<PrivateRoute><Profile/></PrivateRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

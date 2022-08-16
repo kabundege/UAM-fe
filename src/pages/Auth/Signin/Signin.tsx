@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import InputField from '../../../components/InputField';
@@ -8,6 +8,7 @@ import Button from '../../../components/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import useLoading from '../../../hooks/useLoading';
 import { SigninApi } from '../../../API/auth.service';
+import { StoreContext } from '../../../context';
 
 interface Creds {
   email: string,
@@ -17,6 +18,7 @@ interface Creds {
 const initialCreds = { email:"",password:""}
 
 export default function Signin() {
+  const { user,handleContext } = useContext(StoreContext)
   const { isLoading,error,load } = useLoading(false)
   const [ ShowPassword,setShowPassword ] = useState(false)
   const navigate = useNavigate() 
@@ -35,11 +37,27 @@ export default function Signin() {
     // here
     load(SigninApi(data))
     .then(res => {
-      if(res.status === 200)
-      navigate('/profile')
+      if(res.status === 200){
+        handleContext(
+          'token',
+          res.token,
+          () => {
+            handleContext(
+              'user',
+              res.user
+            )
+          }
+        )
+      }
     })
-    
   })
+
+  useEffect(()=>{
+    /** redirect user to profile */
+    if(user)
+    navigate('/profile')
+
+  },[user,navigate])
 
   const togglePassword = () => {
     setShowPassword(prev => !prev)

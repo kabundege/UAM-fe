@@ -31,6 +31,7 @@ interface Credentials {
   dateOfBirth: Date | string,
   maritalStatus: string,
   nationality: string,
+  phoneNumber: string,
 }
 
 const initialCreds:Credentials = {
@@ -45,6 +46,7 @@ const initialCreds:Credentials = {
   gender:'',
   maritalStatus:'',
   nationality: '',
+  phoneNumber: ''
 }
 
 export default function Signup() {
@@ -82,7 +84,7 @@ export default function Signup() {
 
     await new Promise((resolve,reject)=>{        //
         xhr.onload = () => {
-            resolve(keys.key)
+            resolve(keys.data.Key)
         };
         //
         xhr.onerror = () => {
@@ -110,10 +112,13 @@ export default function Signup() {
         xhr.send(blob);
     })
 
-    return keys.data.key
+    return keys.data.Key
   };
 
   const submitHandler = handleSubmit(async (data)=>{
+
+    if(isLoading)
+    return null
     // here
     const payload:any = {
       ...data
@@ -124,13 +129,18 @@ export default function Signup() {
       document
     }
 
+    if(payload['p'])
+    delete payload['p']
+
+    setLoader(true)
     /** Upload files */
     for(const [key,value] of Object.entries(files)){
+      if(!value)
+      break
         // eslint-disable-next-line
       const imageKey = await uploadToAws(value)
       if(!imageKey){
         // if value key is null
-        setError('')
         break;
       }
       payload[key] = imageKey
@@ -139,7 +149,7 @@ export default function Signup() {
     /** Create user */
     load(SignupApi(payload))
     .then(res => {
-      if(res.status === 200)
+      if(res.status === 201)
       navigate('/verification')
     })
 
@@ -153,7 +163,6 @@ export default function Signup() {
     // clear error
     if(error) clearError()
     
-    // setValue('profilePhoto',val)
     setValue(key,value)
     setCreds((prev:Credentials) => ({ ...prev,[key]:value }))
     //
@@ -161,7 +170,6 @@ export default function Signup() {
     clearErrors(key)
   }
 
-  console.log(errors)
 
   return (
     <form className='flex flex-col px-10' onSubmit={submitHandler}>
@@ -212,6 +220,7 @@ export default function Signup() {
           error={errors.national_id?.message}
         />
       </div>
+      <div className={flexer}>
       <InputField 
         type="text"
         label='Nationality'
@@ -219,6 +228,15 @@ export default function Signup() {
         error={errors.nationality?.message}
         register={register('nationality')}
       />
+      <div className='spacer'/>
+      <InputField
+        placeholder="+250"
+        label="Phone number"
+        type="tel"
+        register={register('phoneNumber')}
+        error={errors.phoneNumber?.message}
+      />
+      </div>
       <div className={flexer}>
         <InputField
           type="date"
