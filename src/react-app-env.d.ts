@@ -16,7 +16,7 @@ export interface User {
   national_id: string,
   phoneNumber: string,
   document: string,
-  isVerified?: boolean,
+  status: string,
   hasTwoFactorAuth?:boolean,
   dateOfBirth: Date | string,
   maritalStatus: string,

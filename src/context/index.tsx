@@ -73,6 +73,10 @@ class StoreProvider extends Component<Props>{
 
     }
 
+    logout = (callback?:()=>void) => {
+        this.setState({},() =>{ if(callback)callback() })
+    }
+
     render(){
         return(
             <StoreContext.Provider 

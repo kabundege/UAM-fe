@@ -1,10 +1,12 @@
-import React, { FC, Fragment, ReactNode } from "react";
+import React, { FC, Fragment, ReactNode, useContext } from "react";
 import { Navigate } from "react-router-dom";
+import { StoreContext } from "../context";
 
 
 const PrivateRoute:FC<{ children:ReactNode }> = ({ children }) => {
+  const { token } = useContext(StoreContext)
 
-  if(!localStorage.getItem('token')){
+  if(!token){
     return (
       <Navigate replace to="/" />
     )

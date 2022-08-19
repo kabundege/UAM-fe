@@ -1,10 +1,12 @@
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useContext } from "react";
 import { Navigate } from "react-router-dom";
+import { StoreContext } from "../context";
 
 
 const PublicRoute:FC<{ children:ReactNode }> = ({ children }) => {
+  const { token } = useContext(StoreContext)
 
-  if(localStorage.getItem('token')){
+  if(token){
     return (
       <Navigate replace to="/profile" />
     )

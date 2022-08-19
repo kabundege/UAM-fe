@@ -3,7 +3,7 @@ import ForgotPass from "../pages/Auth/ForgotPass";
 import ResetPass from "../pages/Auth/ResetPass";
 import Signin from "../pages/Auth/Signin";
 import Signup from "../pages/Auth/Signup";
-import Verification from "../pages/Auth/Verification";
+import Verification from "../pages/Verification";
 import NotFound from "../pages/NotFound";
 import Profile from "../pages/Profile";
 import Welcome from "../pages/Welcome";
@@ -27,11 +27,11 @@ const App = () => {
           >
             <Route path="signin" element={<Signin/>} />
             <Route path="signup" element={<Signup/>} />
-            <Route path="verification" element={<Verification/>}/>
             <Route path="reset-password" element={<ResetPass/>} />
             <Route path="forgot-password" element={<ForgotPass/>} />
             <Route index element={<Navigate to="signin" />}/>
           </Route>
+          <Route path="/verification" element={<PrivateRoute><Verification/></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute><Profile/></PrivateRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>

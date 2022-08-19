@@ -15,17 +15,17 @@ const useLoading = (initialLoadingState = false) => {
         clearError()
         return aPromise
         .then((res)=> {
-            if(res.status !== 200 || res.status !== 201){
+            if(res.status !== 200 && res.status !== 201){
                 SetSuccess(false)
-                throw new Error(res.error)
+                const error = 
+                    typeof(res.message) === 'string' ? 
+                    res.message : res.error;
+                setError(error)
+                throw error
             }else{
                 SetSuccess(true)
-                return res
             }
-        })
-        .catch((err)=> {
-            setError( err.message || err.error || err )
-            SetSuccess(false)
+            return res
         })
         .finally(() => setLoader(false))
     }

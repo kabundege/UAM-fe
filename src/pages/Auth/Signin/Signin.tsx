@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import InputField from '../../../components/InputField';
 import { signInSchema } from '../../../validation/auth.validation';
 import { BsEyeSlashFill,BsEyeFill } from 'react-icons/bs';
 import Button from '../../../components/Button';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import useLoading from '../../../hooks/useLoading';
 import { SigninApi } from '../../../API/auth.service';
 import { StoreContext } from '../../../context';
@@ -18,10 +18,9 @@ interface Creds {
 const initialCreds = { email:"",password:""}
 
 export default function Signin() {
-  const { user,handleContext } = useContext(StoreContext)
+  const { handleContext } = useContext(StoreContext)
   const { isLoading,error,load } = useLoading(false)
   const [ ShowPassword,setShowPassword ] = useState(false)
-  const navigate = useNavigate() 
 
   const {
     register,
@@ -38,26 +37,20 @@ export default function Signin() {
     load(SigninApi(data))
     .then(res => {
       if(res.status === 200){
+        localStorage.setItem('token',res.data.token)
         handleContext(
           'token',
-          res.token,
+          res.data.token,
           () => {
             handleContext(
               'user',
-              res.user
+              res.data.user
             )
           }
         )
       }
     })
   })
-
-  useEffect(()=>{
-    /** redirect user to profile */
-    if(user)
-    navigate('/profile')
-
-  },[user,navigate])
 
   const togglePassword = () => {
     setShowPassword(prev => !prev)

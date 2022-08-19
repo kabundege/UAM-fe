@@ -38,3 +38,8 @@ export const ForgotPassApi: (email:string) => Promise<any> = (email) => {
 export const ResetApi: (password:string) => Promise<any> = (password) => {
     return Fetcher(`${UAM_URL}/reset-password`,'POST',{ password })
 }
+
+//verify-account
+export const VerificationApi: (code:string) => Promise<any> = (code) => {
+    return Fetcher(`${ENROLL_URL}/verify-account`,'POST',{ code })
+}

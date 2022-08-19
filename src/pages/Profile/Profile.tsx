@@ -8,6 +8,8 @@ import useLoading from '../../hooks/useLoading'
 import { getSignedUrl } from '../../API/aws.service'
 import { StoreContext } from '../../context'
 
+enum AccountStatus { UNVERIFIED, PENDING, VERIFICATION, VERIFIED }
+
 export default function Profile() {
   const { user } = useContext(StoreContext)
   const { isLoading,setError,load,error } = useLoading()
@@ -33,7 +35,7 @@ export default function Profile() {
                 link.href = url;
                 link.setAttribute(
                   'download',
-                  `Resume.pdf`,
+                  `document.${user.document.split('.')[1]}`,
                 );
             
                 // Append to html link element page
@@ -70,11 +72,11 @@ export default function Profile() {
               <div className={centerd+'flex-col'}>
                 <div className={'w-40 h-40 bg-gray-300 rounded-full relative overflow-hidden border-2'+centerd}>
                   <AiOutlineLoading className='text-blue-500 animate-spin' />
-                  <CustomImage className="absolute left-0 top-0" src={'https://picsum.photos/200'} />
+                  <CustomImage className="absolute left-0 top-0" src={user.profilePhoto} />
                 </div>
                 <div className={centerd+' my-5'}>
                   <h3 className='text-2xl font-bold'>Christophe kwizera Kabundege</h3>
-                  <GoVerified className="text-blue-600 ml-2" /> 
+                  { user.status === AccountStatus.VERIFIED.toString() && <GoVerified className="text-blue-600 ml-2" /> }
                 </div>
                 <div className={centerd+'flex-col'}>
                   {Info('Age',user?.age)}

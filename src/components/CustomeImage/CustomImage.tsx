@@ -11,23 +11,15 @@ const CustomeImage:FC<CustomImageProps> = ({ src, alt='', ...rest }) => {
 
     useEffect(()=>{
         if(src){
-            if( !src.startsWith('data:') && !src.startsWith('blob')){
-                // reset the image that
-                if(ImgRef.current && ImgRef.current.src)
-                ImgRef.current.src = ""
-                /**
-                 * Private Images
-                 */
-                getSignedUrl(src)
-                .then(res => {
-                    const { url } = res.data as any
-                    if(ImgRef.current)
-                    ImgRef.current.src = url
-                })
-            }else if(ImgRef.current){
-                // local files
-                ImgRef.current.src = src
-            }
+            /**
+             * Private Images
+             */
+            getSignedUrl(src)
+            .then(res => {
+                const url = res.data as any
+                if(ImgRef.current)
+                ImgRef.current.src = url
+            })
         }
     },[src])
 
