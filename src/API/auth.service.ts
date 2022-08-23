@@ -26,7 +26,6 @@ interface UserSignUpCreds {
     nationality: string,
 }
 
-
 export const SignupApi: (creds:UserSignUpCreds) => Promise<any> = (credentials) => {
     return Fetcher(`${ENROLL_URL}/signup`,'POST',credentials)
 }
@@ -35,11 +34,14 @@ export const ForgotPassApi: (email:string) => Promise<any> = (email) => {
     return Fetcher(`${UAM_URL}/forgot-password`,'POST',{ email })
 }
 
-export const ResetApi: (password:string) => Promise<any> = (password) => {
-    return Fetcher(`${UAM_URL}/reset-password`,'POST',{ password })
+export const ResetApi: (password:string,token:string) => Promise<any> = (password,token) => {
+    return Fetcher(`${UAM_URL}/reset-password/${token}`,'POST',{ password })
 }
-
 //verify-account
 export const VerificationApi: (code:string) => Promise<any> = (code) => {
     return Fetcher(`${ENROLL_URL}/verify-account`,'POST',{ code })
+}
+//verify-Token
+export const SigninToken: (token:string) => Promise<any> = (token) => {
+    return Fetcher(`${UAM_URL}/verify-token/${token}`,'GET')
 }

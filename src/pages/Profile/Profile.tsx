@@ -12,7 +12,7 @@ enum AccountStatus { UNVERIFIED, PENDING, VERIFICATION, VERIFIED }
 
 export default function Profile() {
   const { user } = useContext(StoreContext)
-  const { isLoading,setError,load,error } = useLoading()
+  const { isLoading,setError,setLoader,error } = useLoading()
 
   const Info = (label:string,value:string) => (
     <p className='flex items-center text-lg capitalize mt-3'>
@@ -22,8 +22,9 @@ export default function Profile() {
   )
 
   const handleDownload = async () => {
-    if(user?.document){
-      load(getSignedUrl(user.document))
+    if(user?.document && !isLoading){
+      setLoader(true)
+      getSignedUrl(user.document)
       .then(res => {
         if(res.status === 200){
           fetch(res.data)
@@ -46,7 +47,7 @@ export default function Profile() {
             
                 // Clean up and remove the link
                 link.parentNode?.removeChild(link);
-          })
+          }).finally(() => setLoader(false))
         }
       })
     }else{
@@ -87,17 +88,21 @@ export default function Profile() {
                   {Info('email',user?.email)}
                   {Info('Nationality',user?.nationality)}
                   {Info('Identification',user?.national_id)}
-                  <div onClick={handleDownload} className={flexer+' mt-5 p-2 rounded-md bg-slate-200 hover:opacity-90 cursor-pointer'}>
-                    <div className='p-3 rounded-md bg-blue-200'>
-                      {
-                        isLoading ? 
-                          <AiOutlineLoading className="text-blue-600 animate-spin" /> :
-                          <GoCloudDownload className='text-blue-700' />
-                      }
-                    </div>
-                    <p className='ml-2'>Download Attched Document</p>
+                  {
+                    user.document ? (
+                      <div onClick={handleDownload} className={flexer+' mt-5 p-2 rounded-md bg-slate-200 hover:opacity-90 cursor-pointer'}>
+                        <div className='p-3 rounded-md bg-blue-200'>
+                          {
+                            isLoading ? 
+                              <AiOutlineLoading className="text-blue-600 animate-spin" /> :
+                              <GoCloudDownload className='text-blue-700' />
+                          }
+                        </div>
+                        <p className='ml-2'>Download Attched Document</p>
+                      </div>
+                    ):null
+                  }
                   </div>
-                </div>
                 {
                   error ?
                     <p className='error' >{error}</p> :

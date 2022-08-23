@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import InputField from '../../../components/InputField';
@@ -7,6 +7,7 @@ import { BsEyeSlashFill,BsEyeFill } from 'react-icons/bs';
 import Button from '../../../components/Button';
 import useLoading from '../../../hooks/useLoading';
 import { ResetApi } from '../../../API/auth.service';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface Creds {
   confirm: string,
@@ -16,6 +17,8 @@ interface Creds {
 const initialCreds = { confirm:"",password:""}
 
 export default function ResetPass() {
+  const location = useLocation()
+  const navigate = useNavigate()
   const [ ShowPassword,setShowPassword ] = useState(false)
   const { isLoading,error,load,setError,clearError,apiSuccess } = useLoading(false)
 
@@ -37,14 +40,28 @@ export default function ResetPass() {
 
     clearError()
 
+    const params = new URLSearchParams(location.search)
+    const token = params.get('token')
+
     /** Api */
-    load(ResetApi(data.password))
+    if(token)
+    load(ResetApi(data.password,token))
     
   })
 
   const togglePassword = () => {
     setShowPassword(prev => !prev)
   }
+
+  useEffect(()=>{
+
+    const params = new URLSearchParams(location.search)
+    const token = params.get('token')
+
+    if(!token)
+    navigate('/')
+
+  },[location,navigate])
 
   return (
     <form className='flex flex-col  px-20' onSubmit={submitHandler}>

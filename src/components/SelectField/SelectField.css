@@ -144,7 +144,7 @@ select:-webkit-autofill:focus {
   justify-content: space-between;
   padding: 16px;
   margin-top: 8px;
-  border: 1px solid #9099A8;
+  border: 1px solid #cacaca;
   border-radius: 8px;
 }
 
@@ -165,8 +165,8 @@ select:-webkit-autofill:focus {
 .SelectField .InputWrapper {
   padding: 10px;
   margin-top: 8px;
-  border: 1px solid #9099A8;
-  border-radius: 8px;
+  border: 1px solid #cacaca;
+  border-radius: 6px;
   cursor: pointer;
   background: transparent;
   outline: none;
@@ -189,7 +189,7 @@ select:-webkit-autofill:focus {
   z-index: 100;
   overflow: hidden;
   background: #FFF;
-  border-radius: 11px;
+  border-radius: 6px;
   box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
   padding: 0 10px;
 }
@@ -204,7 +204,7 @@ select:-webkit-autofill:focus {
   padding: 8px 15px;
   transition: all 0.5s ease;
   margin: 0;
-  border-radius: 11px;
+  border-radius: 6px;
   cursor: pointer;
   width: 100%;
   text-align: left;

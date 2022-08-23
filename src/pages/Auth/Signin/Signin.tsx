@@ -1,14 +1,16 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import InputField from '../../../components/InputField';
 import { signInSchema } from '../../../validation/auth.validation';
 import { BsEyeSlashFill,BsEyeFill } from 'react-icons/bs';
 import Button from '../../../components/Button';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import useLoading from '../../../hooks/useLoading';
-import { SigninApi } from '../../../API/auth.service';
+import { SigninApi, SigninToken } from '../../../API/auth.service';
 import { StoreContext } from '../../../context';
+import { AiOutlineLoading } from 'react-icons/ai';
+import { centerd } from '../../../styles/globalStyles';
 
 interface Creds {
   email: string,
@@ -18,9 +20,35 @@ interface Creds {
 const initialCreds = { email:"",password:""}
 
 export default function Signin() {
+  const location = useLocation()
+  const { isLoading:tokenLoading,load:tokenLoader } = useLoading(false)
   const { handleContext } = useContext(StoreContext)
   const { isLoading,error,load } = useLoading(false)
   const [ ShowPassword,setShowPassword ] = useState(false)
+
+
+  useEffect(()=>{
+
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+
+    if(token)
+    tokenLoader(SigninToken(token))
+    .then(res=>{
+      localStorage.setItem('token',token)
+      handleContext(
+        'token',
+        token,
+        () => {
+          handleContext(
+            'user',
+            res.data.user
+          )
+        }
+      )
+    })
+    // eslint-disable-next-line
+  },[])
 
   const {
     register,
@@ -40,13 +68,7 @@ export default function Signin() {
         localStorage.setItem('token',res.data.token)
         handleContext(
           'token',
-          res.data.token,
-          () => {
-            handleContext(
-              'user',
-              res.data.user
-            )
-          }
+          res.data.token
         )
       }
     })
@@ -55,6 +77,14 @@ export default function Signin() {
   const togglePassword = () => {
     setShowPassword(prev => !prev)
   }
+
+  // if Welcome page is still loading
+  if(tokenLoading)
+  return (
+    <div className={centerd}>
+      <AiOutlineLoading className="text-blue-600 text-3xl animate-spin" />
+    </div>
+  )
 
   return (
     <form className='flex flex-col  px-20' onSubmit={submitHandler}>

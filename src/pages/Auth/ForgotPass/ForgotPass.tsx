@@ -10,7 +10,7 @@ import { flexer } from '../../../styles/globalStyles';
 import { BsChevronLeft } from 'react-icons/bs';
 import { ForgotPassApi } from '../../../API/auth.service';
 
-interface Creds {
+type Creds = {
   email: string,
 }
 

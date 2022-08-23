@@ -5,10 +5,10 @@ export const ContextPersistKey = 'context'
 
 const initialState:ContextProps = {
     handleContext: () => {},
+    theme: 'light'
 }
 
 const StoreContext = createContext<ContextProps>(initialState);
-
 
 interface Props { 
     children?:ReactNode
@@ -16,7 +16,9 @@ interface Props {
 
 class StoreProvider extends Component<Props>{
 
-    state = {};
+    state = {
+        theme: 'light'
+    };
       
     handleContext:handleContext = (key,value,callback) => {
         this.setState(
@@ -38,27 +40,9 @@ class StoreProvider extends Component<Props>{
         }
 
         const params = new URLSearchParams(window.location.search)
-
-        const token = params.get('token')
         const resetToken = params.get('reset')
 
-        if(token){
-            // authenticate the token and check if its valid
-            // Async Function
-
-            // if the token is valid, then save token
-            localStorage.setItem('token',token)
-            this.handleContext(
-                'token',
-                token, 
-                () => {
-                    //redirect the user to homepage
-                    window.location.assign('/home')
-                } 
-            )
-
-            
-        }else if(resetToken){
+        if(resetToken){
             // if the token is valid, then save token
             localStorage.setItem('token',resetToken)
             this.handleContext(

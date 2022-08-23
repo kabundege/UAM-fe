@@ -19,13 +19,6 @@ describe('====== Button Test =======',() => {
         expect(queryByText(BtnText)).toBeTruthy()
     })
     
-    it('should render the button loading correctly',() => {
-    
-        const { queryByText } = render(<Button text={BtnText} isLoading={true} />)
-        
-        expect(queryByText(BtnText)).toBeFalsy()
-    })
-    
     it('should render button click event',() => {
         const onClick = jest.fn()
         const { queryByTestId } = render(<Button text={BtnText} onClick={onClick} />)

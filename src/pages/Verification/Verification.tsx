@@ -7,27 +7,20 @@ import Welcome from '../Welcome';
 import { VerificationApi } from '../../API/auth.service';
 import { StoreContext } from '../../context';
 
-enum AccountStatus { UNVERIFIED, PENDING, VERIFICATION, VERIFIED }
-
 export default function Verification() {
   const { isLoading,error,load } = useLoading(false)
   const { user,handleContext } = useContext(StoreContext)
   const [ code,setCode ] = useState('')
-  const navigation = useNavigate() 
-
+  const navigation = useNavigate()
 
   const submitHandler = (e:FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     // navigation('')
     load(VerificationApi(code))
-    .then(() => {
-      const payload:any = {
-        ...user,
-        status:AccountStatus.VERIFIED.toString() 
-      } 
+    .then((res) => {
       handleContext(
         'user',
-        payload,
+        res.data.user,
         ()=>{
           navigation('/profile')
         }
@@ -39,13 +32,13 @@ export default function Verification() {
     <Welcome>
       <form className='flex flex-col  px-20' onSubmit={submitHandler}>
         <h1 className="text-4xl text-center font-bold text-primary opacity-20 my-10">Verification</h1>
-        <p className="text-xl my-10 text-center text-gray-500">We have send a verification code to your email john***@gmail.com</p>
+        <p className="text-xl my-10 text-center text-gray-500">We have send a {user?.status ? 'verification' : null} code to your email {user?.email || 'abcde***@mail.com'}</p>
         <VerificationInput autoFocus length={6} value={code} onChange={val => setCode(val)} />
-        {
-          error ?
-            <p className='error mt-5' >{error}</p> :
-            <div className="spacer" />
-        }
+          {
+            error ?
+              <p className='error mt-5' >{error}</p> :
+              <div className="spacer" />
+          }
         <Button 
           text='Continue' 
           className="w-auto" 

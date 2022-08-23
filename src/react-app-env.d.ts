@@ -26,6 +26,7 @@ export interface User {
 
 export interface ContextProps {
   user?: User,
+  theme: string,
   token?: string,
   handleContext: handleContext
 }

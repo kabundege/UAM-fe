@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import InputField from '../../../components/InputField';
@@ -7,17 +7,19 @@ import { BsEyeSlashFill,BsEyeFill } from 'react-icons/bs';
 import Button from '../../../components/Button';
 import useLoading from '../../../hooks/useLoading';
 import ImagePicker from '../../../components/ImagePicker';
-import { centerd, flexer } from '../../../styles/globalStyles';
+import { centerd } from '../../../styles/globalStyles';
 import SelectField from '../../../components/SelectField';
 import { enumToArray } from '../../../helpers/enumtoArray';
 import UploadField from '../../../components/UploadField';
 import { getUploadSignedUrl } from '../../../API/aws.service';
 import { SignupApi } from '../../../API/auth.service';
-import { useNavigate } from 'react-router-dom';
+import { StoreContext } from '../../../context';
+
+const row = 'flex items-start justify-between'
 
 
 enum MaritalStatus { SINGLE, MARRIED, DIVORCED, WIDOWED }
-enum Gender { Male, Female, "Prefer not Say", "None of the above" }
+enum Gender { Male, Female, "Prefer not to Say", "None of the above" }
 
 interface Credentials {
   profilePhoto: any,
@@ -25,7 +27,6 @@ interface Credentials {
   email: string,
   password: string,
   gender: string,
-  age: string,
   national_id: string,
   document: any,
   dateOfBirth: Date | string,
@@ -38,7 +39,6 @@ const initialCreds:Credentials = {
   profilePhoto:'',
   document:'',
   national_id: '',
-  age: '',
   name: '',
   password: '',
   dateOfBirth: '',
@@ -51,10 +51,9 @@ const initialCreds:Credentials = {
 
 export default function Signup() {
   const { isLoading,error,clearError,load,setError,setLoader } = useLoading(false)
-  const [ ShowPassword,setShowPassword ] = useState(false)
   const [ credentials,setCreds ] = useState<Credentials>(initialCreds)
-  //
-  const navigate = useNavigate() 
+  const [ ShowPassword,setShowPassword ] = useState(false)
+  const { handleContext } = useContext(StoreContext)
 
   const { profilePhoto,maritalStatus,gender,document } = credentials
 
@@ -62,6 +61,7 @@ export default function Signup() {
     setValue,
     register,
     clearErrors,
+    setError:setFormError,
     handleSubmit,
     formState: { errors },
   } = useForm<Credentials>({
@@ -71,7 +71,7 @@ export default function Signup() {
 
   const uploadToAws = async (value:any):Promise<string | null> => {
 
-    const keys:any = await getUploadSignedUrl(value.type).catch(er => setError(er.message))
+    const keys:any = await getUploadSignedUrl(value.name.split('.')[1]).catch(er => setError(er.message))
 
     if(!keys?.data?.url)
     return null
@@ -119,9 +119,22 @@ export default function Signup() {
 
     if(isLoading)
     return null
+    /**
+     * Birthdate Validation
+     */
+    const today = new Date()
+    const bd =  new Date(data.dateOfBirth)
+    const age = today.getFullYear() - bd.getFullYear()
+    // check if the data is not greater than today
+    if(bd > today || !age){
+      return setFormError('dateOfBirth',{ message: 'Indalid date of birth' })
+    }
+
+
     // here
     const payload:any = {
-      ...data
+      ...data,
+      age: String(age)
     }
 
     const files = {
@@ -149,8 +162,10 @@ export default function Signup() {
     /** Create user */
     load(SignupApi(payload))
     .then(res => {
-      if(res.status === 201)
-      navigate('/verification')
+      if(res.status === 201){
+        localStorage.setItem('token',res.data.token)
+        handleContext('token',res.data.token)
+      }
     })
 
   })
@@ -170,7 +185,6 @@ export default function Signup() {
     clearErrors(key)
   }
 
-
   return (
     <form className='flex flex-col px-10' onSubmit={submitHandler}>
       <h1 className="text-4xl font-bold text-primary opacity-20 mt-10">Sign Up</h1>
@@ -183,32 +197,13 @@ export default function Signup() {
           error={errors.profilePhoto?.message}
         />
       </div>
-      <div className={flexer}>
+      <div className={row}>
         <InputField 
           type="text"
           label='Full Name'
           placeholder='e.g John Doe Kalisa'
           error={errors.name?.message}
           register={register('name')}
-        />
-        <div className='spacer' />
-        <InputField 
-          label="age"
-          name="age"
-          type="number"
-          placeholder='e.g 20'
-          register={register('age')}
-          error={errors.age?.message}
-        />
-      </div>
-      <div className={flexer}>
-        <SelectField 
-          label='Marital Status'
-          value={maritalStatus}
-          error={errors.maritalStatus?.message}
-          placeholder='Select your marital status'
-          onChange={val => handleCreds('maritalStatus',val)}
-          data={enumToArray(MaritalStatus).map(status => ({ value: status.toString() }))}
         />
         <div className='spacer' />
         <InputField 
@@ -220,24 +215,32 @@ export default function Signup() {
           error={errors.national_id?.message}
         />
       </div>
-      <div className={flexer}>
-      <InputField 
-        type="text"
-        label='Nationality'
-        placeholder='e.g Rwandan'
-        error={errors.nationality?.message}
-        register={register('nationality')}
+      <SelectField 
+        label='Marital Status'
+        value={maritalStatus}
+        error={errors.maritalStatus?.message}
+        placeholder='Select your marital status'
+        onChange={val => handleCreds('maritalStatus',val)}
+        data={enumToArray(MaritalStatus).map(status => ({ value: status.toString() }))}
       />
-      <div className='spacer'/>
-      <InputField
-        placeholder="+250"
-        label="Phone number"
-        type="tel"
-        register={register('phoneNumber')}
-        error={errors.phoneNumber?.message}
-      />
+      <div className={row}>
+        <InputField 
+          type="text"
+          label='Nationality'
+          placeholder='e.g Rwandan'
+          error={errors.nationality?.message}
+          register={register('nationality')}
+        />
+        <div className='spacer'/>
+        <InputField
+          placeholder="+250"
+          label="Phone number"
+          type="tel"
+          register={register('phoneNumber')}
+          error={errors.phoneNumber?.message}
+        />
       </div>
-      <div className={flexer}>
+      <div className={row}>
         <InputField
           type="date"
           name="nationId"
@@ -257,7 +260,6 @@ export default function Signup() {
         />
       </div>
       <UploadField
-        multiple
         value={document}
         accept=".pdf,.docx"
         error={errors.document?.message}
@@ -282,11 +284,12 @@ export default function Signup() {
         }
         register={register('password')}
         error={errors.password?.message}
+        labelClassName="someDiv"
       />
       {
         error ?
           <p className='error' >{error}</p> :
-          <div className="spacer" />
+          <></>
       }
       <Button className="w-auto" text='Sign In' isLoading={isLoading} />
     </form>

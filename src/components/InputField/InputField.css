@@ -149,9 +149,9 @@ select:-webkit-autofill:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: 14px;
   margin-top: 8px;
-  border: 1px solid #9099A8;
+  border: 1px solid #cacaca;
   border-radius: 8px;
 }
 .InputField .InputWrapper input {

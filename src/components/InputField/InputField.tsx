@@ -7,12 +7,13 @@ type Props = React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>
   IconProp?: ReactNode,
   Icon?: IconType,
   label: string,
+  labelClassName?: string,
   error?: string,
   value?: string,
   register: any,
 }
 
-const InputField:FC<Props> = ({ onChange,Icon,register,error,label,IconProp, ...rest }) => {
+const InputField:FC<Props> = ({ onChange,Icon,register,error,label,IconProp, labelClassName, ...rest }) => {
   return (
     <div key={label} className='InputField'>
       <label className="capitalize">{label}</label>
@@ -24,7 +25,9 @@ const InputField:FC<Props> = ({ onChange,Icon,register,error,label,IconProp, ...
         { Icon ? <Icon className="icon" /> : null}
         { IconProp ? IconProp : null }
       </div>
-      <p className='inputError truncate'>{error || null}</p>
+      <div className={labelClassName}>
+        <p className="inputError">{error || null}</p>
+      </div>
     </div>
   )
 }

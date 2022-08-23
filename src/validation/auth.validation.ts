@@ -38,8 +38,8 @@ const signUpSchema = yup
   .object({
     profilePhoto: yup.mixed().required('Provide your profile photo'),
     document: yup.mixed(),
-    age: yup.string().required('Provide your age'),
     gender: yup.string().required('Provide your gender'),
+    dateOfBirth: yup.string().required('Provide your date of birth'),
     maritalStatus: yup.string().required('Provide your marital status'),
     name: yup.string().required('Provide the company name').matches(/^[a-zA-Z0-9 *]{3,25}$/,'name is not valid'),
     national_id: yup.string().test("len", "Must be exactly 16 characters", (val) => val?.length === 16),

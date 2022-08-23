@@ -1,8 +1,6 @@
-[![Netlify Status](https://api.netlify.com/api/v1/badges/ba81d567-d084-4ca9-870c-b19039e08c20/deploy-status)](https://app.netlify.com/sites/uam-fe/deploys)
-
 # Getting Started with UAM Frontend
 
-This project can be previewed here on [Netlify](https://github.com/facebook/create-react-app).
+This project can be previewed here on [Netlify](https://uam-fe.vercel.app).
 
 
 ## Installation
